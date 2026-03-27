@@ -1,0 +1,28 @@
+name: sand_table_control
+description: A new Flutter project for Sand Table Control.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 状态管理
+  provider: ^6.1.1
+  # 屏幕适配 (自适应分辨率)
+  flutter_screenutil: ^5.9.0
+  # 获取网络连接状态 (可选，这里用TCP连接状态即可，为了WiFi指示器加上connectivity_plus)
+  connectivity_plus: ^5.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
