@@ -23,22 +23,16 @@ class HomePage extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
           child: Column(
             children: [
-              // 顶部提示
-              Text(
-                '备注：全亮时所有灯光开启',
-                style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 16.h),
 
               // 控制列表
               Expanded(
                 child: ListView(
                   children: [
-                    _buildSingleControlRow(context, '住宅', 'residential', textOn: '动态', textOff: '静态'),
-                    _buildSingleControlRow(context, '会所', 'clubhouse', textOn: '动态', textOff: '静态'),
-                    _buildSingleControlRow(context, '办公', 'office', textOn: '动态', textOff: '静态'),
-                    _buildSingleControlRow(context, '轮廓灯', 'outline_light', textOn: '动态', textOff: '静态'),
+                    _buildSingleControlRow(context, '住宅', 'residential', textOn: '动态', textOff: '静态', colorOn: Colors.green, colorOff: Colors.blue),
+                    _buildSingleControlRow(context, '会所', 'clubhouse', textOn: '动态', textOff: '静态', colorOn: Colors.green, colorOff: Colors.blue),
+                    _buildSingleControlRow(context, '办公', 'office', textOn: '动态', textOff: '静态', colorOn: Colors.green, colorOff: Colors.blue),
+                    _buildSingleControlRow(context, '轮廓灯', 'outline_light', textOn: '动态', textOff: '静态', colorOn: Colors.green, colorOff: Colors.blue),
                     
                     Divider(height: 32.h),
 
@@ -102,7 +96,12 @@ class HomePage extends StatelessWidget {
   }
 
   /// 构建单开关控制行
-  Widget _buildSingleControlRow(BuildContext context, String title, String key, {String textOn = '开', String textOff = '关'}) {
+  Widget _buildSingleControlRow(
+    BuildContext context, 
+    String title, 
+    String key, 
+    {String textOn = '开', String textOff = '关', Color colorOn = Colors.green, Color colorOff = Colors.grey}
+  ) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
@@ -112,9 +111,16 @@ class HomePage extends StatelessWidget {
           Consumer<SandTableProvider>(
             builder: (context, provider, child) {
               final value = provider.switches[key] ?? false;
+              
+              // 如果处于全暗状态（即总控关闭，并且当前按钮也是关闭的），文字显示为“关”
+              final isAllOff = !provider.isAllOn && provider.switches.values.every((v) => !v);
+              final displayLabel = (isAllOff && !value) ? '关' : (value ? textOn : textOff);
+              
               return _CustomSwitch(
-                label: value ? textOn : textOff,
+                label: displayLabel,
                 value: value,
+                activeColor: colorOn,
+                inactiveColor: colorOff,
                 onChanged: (val) => provider.toggleSwitch(key),
               );
             },
@@ -155,6 +161,7 @@ class _CustomSwitch extends StatelessWidget {
   final bool isDisabled;
   final ValueChanged<bool> onChanged;
   final Color activeColor;
+  final Color inactiveColor;
 
   const _CustomSwitch({
     Key? key,
@@ -163,14 +170,22 @@ class _CustomSwitch extends StatelessWidget {
     this.isDisabled = false,
     required this.onChanged,
     this.activeColor = Colors.green,
+    this.inactiveColor = const Color(0xFFBDBDBD), // 默认灰色 Colors.grey[400]
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // 禁用状态的颜色处理
-    final bgColor = isDisabled
-        ? Colors.grey[300]
-        : (value ? activeColor : Colors.grey[400]);
+    // 禁用或根据状态改变颜色，当全暗时 label 为 '关' 或者 '全暗'，通常对应 false，此时如果需要强制灰色，可以在外部传灰色。
+    // 如果想要按钮在特定状态下强制为灰色，这里直接通过 label 判断或者依赖传入的 inactiveColor
+    Color bgColor;
+    if (isDisabled) {
+      bgColor = Colors.grey[300]!;
+    } else if (label == '关' || label == '全暗') {
+      bgColor = Colors.grey[400]!;
+    } else {
+      bgColor = value ? activeColor : inactiveColor;
+    }
+
     final textColor = isDisabled ? Colors.grey[500] : Colors.white;
 
     return GestureDetector(
