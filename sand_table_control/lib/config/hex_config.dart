@@ -23,13 +23,13 @@ class HexConfig {
     'office_on': 'AA 03 01 01',
     'office_off': 'AA 03 01 00',
 
-    // ============ 商业 ============
-    'commercial_on': 'AA 04 01 01',
-    'commercial_off': 'AA 04 01 00',
-
     // ============ 轮廓灯 ============
     'outline_light_on': 'AA 05 00 01',
     'outline_light_off': 'AA 05 00 00',
+
+    // ============ 商业 ============
+    'commercial_on': 'AA 04 01 01',
+    'commercial_off': 'AA 04 01 00',
 
     // ============ 塔冠 ============
     'tower_crown_on': 'AA 06 00 01',

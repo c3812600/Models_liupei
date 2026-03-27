@@ -10,8 +10,8 @@ class SandTableProvider extends ChangeNotifier {
     'residential': false,
     'clubhouse': false,
     'office': false,
-    'commercial': false,
     'outline_light': false,
+    'commercial': false,
     'tower_crown': false,
     'landscape': false,
   };

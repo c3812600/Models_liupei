@@ -35,16 +35,16 @@ class HomePage extends StatelessWidget {
               Expanded(
                 child: ListView(
                   children: [
-                    _buildSingleControlRow(context, '住宅', 'residential'),
-                    _buildSingleControlRow(context, '会所', 'clubhouse'),
-                    _buildSingleControlRow(context, '办公', 'office'),
-                    _buildSingleControlRow(context, '商业', 'commercial'),
+                    _buildSingleControlRow(context, '住宅', 'residential', textOn: '动态', textOff: '静态'),
+                    _buildSingleControlRow(context, '会所', 'clubhouse', textOn: '动态', textOff: '静态'),
+                    _buildSingleControlRow(context, '办公', 'office', textOn: '动态', textOff: '静态'),
+                    _buildSingleControlRow(context, '轮廓灯', 'outline_light', textOn: '动态', textOff: '静态'),
                     
                     Divider(height: 32.h),
 
-                    _buildSingleControlRow(context, '轮廓灯', 'outline_light'),
-                    _buildSingleControlRow(context, '塔冠', 'tower_crown'),
-                    _buildSingleControlRow(context, '景观', 'landscape'),
+                    _buildSingleControlRow(context, '商业', 'commercial', textOn: '开', textOff: '关'),
+                    _buildSingleControlRow(context, '塔冠', 'tower_crown', textOn: '开', textOff: '关'),
+                    _buildSingleControlRow(context, '景观', 'landscape', textOn: '开', textOff: '关'),
 
                     Divider(height: 32.h),
 
@@ -102,7 +102,7 @@ class HomePage extends StatelessWidget {
   }
 
   /// 构建单开关控制行
-  Widget _buildSingleControlRow(BuildContext context, String title, String key) {
+  Widget _buildSingleControlRow(BuildContext context, String title, String key, {String textOn = '开', String textOff = '关'}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
@@ -113,7 +113,7 @@ class HomePage extends StatelessWidget {
             builder: (context, provider, child) {
               final value = provider.switches[key] ?? false;
               return _CustomSwitch(
-                label: '开关',
+                label: value ? textOn : textOff,
                 value: value,
                 onChanged: (val) => provider.toggleSwitch(key),
               );
