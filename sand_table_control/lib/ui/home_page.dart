@@ -111,10 +111,10 @@ class HomePage extends StatelessWidget {
           Consumer<SandTableProvider>(
             builder: (context, provider, child) {
               final value = provider.switches[key] ?? false;
+              final isTurnedOff = provider.isTurnedOff[key] ?? false;
               
-              // 如果处于全暗状态（即总控关闭，并且当前按钮也是关闭的），文字显示为“关”
-              final isAllOff = !provider.isAllOn && provider.switches.values.every((v) => !v);
-              final displayLabel = (isAllOff && !value) ? '关' : (value ? textOn : textOff);
+              // 如果该模块处于全暗关闭状态，则显示“关”
+              final displayLabel = isTurnedOff ? '关' : (value ? textOn : textOff);
               
               return _CustomSwitch(
                 label: displayLabel,

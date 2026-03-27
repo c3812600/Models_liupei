@@ -16,6 +16,17 @@ class SandTableProvider extends ChangeNotifier {
     'landscape': false,
   };
 
+  // 记录每个模块是否处于完全“关”的状态（总控“全暗”时会被标记为 true）
+  final Map<String, bool> isTurnedOff = {
+    'residential': false,
+    'clubhouse': false,
+    'office': false,
+    'outline_light': false,
+    'commercial': false,
+    'tower_crown': false,
+    'landscape': false,
+  };
+
   // 总控状态
   bool isAllOn = false;
 
@@ -24,6 +35,9 @@ class SandTableProvider extends ChangeNotifier {
   /// 切换按钮状态
   void toggleSwitch(String key) {
     if (!switches.containsKey(key)) return;
+
+    // 当用户主动点击时，解除该模块的“全暗锁”状态
+    isTurnedOff[key] = false;
 
     switches[key] = !switches[key]!;
     
@@ -41,9 +55,10 @@ class SandTableProvider extends ChangeNotifier {
     isAllOn = !isAllOn;
 
     if (isAllOn) {
-      // 备注：全亮时所有灯光开启
+      // 全亮
       switches.forEach((key, value) {
         switches[key] = true;
+        isTurnedOff[key] = false;
       });
       
       _tcpService.sendHexCommand('main_all_on');
@@ -51,6 +66,7 @@ class SandTableProvider extends ChangeNotifier {
       // 全暗
       switches.forEach((key, value) {
         switches[key] = false;
+        isTurnedOff[key] = true;
       });
 
       _tcpService.sendHexCommand('main_all_off');
