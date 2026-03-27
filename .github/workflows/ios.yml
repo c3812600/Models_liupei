@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generate platform folders
+        run: flutter create .
+
       # 注意：iOS 编译需要 Apple 开发者证书。
       # 在没有配置证书的情况下，只能构建出无签名的 .app 产物（--no-codesign）。
       # 完整打包 ipa 需要在 GitHub Secrets 中配置证书和描述文件，并使用对应的 action 或脚本。
