@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
                     _buildDoubleControlRow(context, '住宅', 'residential'),
                     _buildDoubleControlRow(context, '会所', 'clubhouse'),
                     _buildDoubleControlRow(context, '办公', 'office'),
-                    _buildDoubleControlRow(context, '轮廓灯', 'outline_light'),
+                    _buildDoubleControlRow(context, '石材柱灯', 'outline_light'),
                     
                     Divider(height: 32.h),
 

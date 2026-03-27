@@ -23,7 +23,7 @@ class HexConfig {
     'office_on': 'AA 03 01 01',
     'office_off': 'AA 03 01 00',
 
-    // ============ 轮廓灯 ============
+    // ============ 石材柱灯 ============
     'outline_light_on': 'AA 05 00 01',
     'outline_light_off': 'AA 05 00 00',
 
