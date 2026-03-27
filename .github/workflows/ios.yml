@@ -11,6 +11,9 @@ jobs:
   build:
     name: Build iOS IPA
     runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ./sand_table_control
 
     steps:
       - name: Checkout repository
@@ -41,4 +44,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ios-app-unsigned
-          path: build/ios/iphoneos/Runner.app.zip
+          path: sand_table_control/build/ios/iphoneos/Runner.app.zip
