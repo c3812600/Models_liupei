@@ -37,6 +37,10 @@ jobs:
       - name: Generate platform folders
         run: flutter create .
 
+      - name: Add Android Internet Permission
+        run: |
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />' android/app/src/main/AndroidManifest.xml
+
       # 如果有测试文件，可以取消注释下面这行
       # - name: Run tests
       #   run: flutter test

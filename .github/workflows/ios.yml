@@ -31,6 +31,12 @@ jobs:
       - name: Generate platform folders
         run: flutter create .
 
+      - name: Add iOS Local Network Permission
+        run: |
+          /usr/libexec/PlistBuddy -c "Add :NSLocalNetworkUsageDescription string 'Need local network access to control sand table'" ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSBonjourServices array" ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSBonjourServices:0 string '_tcp._tcp'" ios/Runner/Info.plist
+
       # 注意：iOS 编译需要 Apple 开发者证书。
       # 在没有配置证书的情况下，只能构建出无签名的 .app 产物（--no-codesign）。
       # 完整打包 ipa 需要在 GitHub Secrets 中配置证书和描述文件，并使用对应的 action 或脚本。
