@@ -50,6 +50,20 @@ class SandTableProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 直接设置按钮具体状态 (用于双按钮分离: 动态=true, 静态=false)
+  void setSwitchState(String key, bool isOn) {
+    if (!switches.containsKey(key)) return;
+
+    isTurnedOff[key] = false;
+    switches[key] = isOn;
+    
+    final commandKey = '${key}_${isOn ? 'on' : 'off'}';
+    _tcpService.sendHexCommand(commandKey);
+
+    _checkAllOnState();
+    notifyListeners();
+  }
+
   /// 切换总控（全亮/全暗）
   void toggleMainControl() {
     isAllOn = !isAllOn;

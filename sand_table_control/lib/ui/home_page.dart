@@ -29,10 +29,10 @@ class HomePage extends StatelessWidget {
               Expanded(
                 child: ListView(
                   children: [
-                    _buildSingleControlRow(context, '住宅', 'residential', textOn: '动态', textOff: '静态', colorOn: Colors.green, colorOff: Colors.blue),
-                    _buildSingleControlRow(context, '会所', 'clubhouse', textOn: '动态', textOff: '静态', colorOn: Colors.green, colorOff: Colors.blue),
-                    _buildSingleControlRow(context, '办公', 'office', textOn: '动态', textOff: '静态', colorOn: Colors.green, colorOff: Colors.blue),
-                    _buildSingleControlRow(context, '轮廓灯', 'outline_light', textOn: '动态', textOff: '静态', colorOn: Colors.green, colorOff: Colors.blue),
+                    _buildDoubleControlRow(context, '住宅', 'residential'),
+                    _buildDoubleControlRow(context, '会所', 'clubhouse'),
+                    _buildDoubleControlRow(context, '办公', 'office'),
+                    _buildDoubleControlRow(context, '轮廓灯', 'outline_light'),
                     
                     Divider(height: 32.h),
 
@@ -92,6 +92,48 @@ class HomePage extends StatelessWidget {
           },
         );
       },
+    );
+  }
+
+  /// 构建双按钮控制行（动态/静态分离）
+  Widget _buildDoubleControlRow(BuildContext context, String title, String key) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
+          Consumer<SandTableProvider>(
+            builder: (context, provider, child) {
+              final value = provider.switches[key] ?? false;
+              final isTurnedOff = provider.isTurnedOff[key] ?? false;
+              
+              // 动态：当 value 为 true 且没有被全暗锁定时激活
+              final isDynamicActive = !isTurnedOff && value == true;
+              // 静态：当 value 为 false 且没有被全暗锁定时激活
+              final isStaticActive = !isTurnedOff && value == false;
+
+              return Row(
+                children: [
+                  _StateButton(
+                    label: '动态',
+                    isActive: isDynamicActive,
+                    activeColor: Colors.green,
+                    onTap: () => provider.setSwitchState(key, true),
+                  ),
+                  SizedBox(width: 12.w),
+                  _StateButton(
+                    label: '静态',
+                    isActive: isStaticActive,
+                    activeColor: Colors.blue,
+                    onTap: () => provider.setSwitchState(key, false),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -210,6 +252,56 @@ class _CustomSwitch extends StatelessWidget {
           label,
           style: TextStyle(
             color: textColor,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 简单的状态按钮，用于双按钮并排的情况
+class _StateButton extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final Color activeColor;
+  final VoidCallback onTap;
+
+  const _StateButton({
+    Key? key,
+    required this.label,
+    required this.isActive,
+    required this.activeColor,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = isActive ? activeColor : const Color(0xFFBDBDBD);
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(8.r),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: Colors.black12,
+                    offset: const Offset(0, 2),
+                    blurRadius: 4,
+                  )
+                ]
+              : [],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: Colors.white,
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
           ),
