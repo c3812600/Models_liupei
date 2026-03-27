@@ -25,7 +25,7 @@ class HomePage extends StatelessWidget {
             children: [
               // 顶部提示
               Text(
-                '备注：全亮时所有灯光静态常亮\n动态和静态按钮互锁(按动态时，静态按钮失效，再按一次动态按钮关闭灯光后，按静态按钮才能用)',
+                '备注：全亮时所有灯光开启',
                 style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
                 textAlign: TextAlign.center,
               ),
@@ -35,10 +35,10 @@ class HomePage extends StatelessWidget {
               Expanded(
                 child: ListView(
                   children: [
-                    _buildDoubleControlRow(context, '住宅', 'residential'),
-                    _buildDoubleControlRow(context, '会所', 'clubhouse'),
-                    _buildDoubleControlRow(context, '办公', 'office'),
-                    _buildDoubleControlRow(context, '商业', 'commercial'),
+                    _buildSingleControlRow(context, '住宅', 'residential'),
+                    _buildSingleControlRow(context, '会所', 'clubhouse'),
+                    _buildSingleControlRow(context, '办公', 'office'),
+                    _buildSingleControlRow(context, '商业', 'commercial'),
                     
                     Divider(height: 32.h),
 
@@ -101,47 +101,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  /// 构建带有动态/静态互锁的控制行
-  Widget _buildDoubleControlRow(BuildContext context, String title, String key) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-          Consumer<SandTableProvider>(
-            builder: (context, provider, child) {
-              final state = provider.doubleSwitches[key];
-              if (state == null) return const SizedBox.shrink();
-
-              // 互锁逻辑
-              final isDynamicDisabled = state.isStaticOn;
-              final isStaticDisabled = state.isDynamicOn;
-
-              return Row(
-                children: [
-                  _CustomSwitch(
-                    label: '动态',
-                    value: state.isDynamicOn,
-                    isDisabled: isDynamicDisabled,
-                    onChanged: (val) => provider.toggleDynamic(key),
-                  ),
-                  SizedBox(width: 16.w),
-                  _CustomSwitch(
-                    label: '静态',
-                    value: state.isStaticOn,
-                    isDisabled: isStaticDisabled,
-                    onChanged: (val) => provider.toggleStatic(key),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   /// 构建单开关控制行
   Widget _buildSingleControlRow(BuildContext context, String title, String key) {
     return Padding(
@@ -152,11 +111,11 @@ class HomePage extends StatelessWidget {
           Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
           Consumer<SandTableProvider>(
             builder: (context, provider, child) {
-              final value = provider.singleSwitches[key] ?? false;
+              final value = provider.switches[key] ?? false;
               return _CustomSwitch(
                 label: '开关',
                 value: value,
-                onChanged: (val) => provider.toggleSingle(key),
+                onChanged: (val) => provider.toggleSwitch(key),
               );
             },
           ),

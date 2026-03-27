@@ -2,7 +2,7 @@
 /// 用户可以在此修改各个按钮发送的指令内容
 class HexConfig {
   // IP 和端口配置
-  static const String serverIp = '192.168.10.1';
+  static const String serverIp = '192.168.18.119';
   static const int serverPort = 60001;
 
   // 心跳包配置（如果需要）
@@ -12,28 +12,20 @@ class HexConfig {
   // 建议将十六进制字符串格式统一为带空格的格式，如 "AA BB 01"
   static const Map<String, String> commands = {
     // ============ 住宅 ============
-    'residential_dynamic_on': 'AA 01 01 01',
-    'residential_dynamic_off': 'AA 01 01 00',
-    'residential_static_on': 'AA 01 02 01',
-    'residential_static_off': 'AA 01 02 00',
+    'residential_on': 'AA 01 01 01',
+    'residential_off': 'AA 01 01 00',
 
     // ============ 会所 ============
-    'clubhouse_dynamic_on': 'AA 02 01 01',
-    'clubhouse_dynamic_off': 'AA 02 01 00',
-    'clubhouse_static_on': 'AA 02 02 01',
-    'clubhouse_static_off': 'AA 02 02 00',
+    'clubhouse_on': 'AA 02 01 01',
+    'clubhouse_off': 'AA 02 01 00',
 
     // ============ 办公 ============
-    'office_dynamic_on': 'AA 03 01 01',
-    'office_dynamic_off': 'AA 03 01 00',
-    'office_static_on': 'AA 03 02 01',
-    'office_static_off': 'AA 03 02 00',
+    'office_on': 'AA 03 01 01',
+    'office_off': 'AA 03 01 00',
 
     // ============ 商业 ============
-    'commercial_dynamic_on': 'AA 04 01 01',
-    'commercial_dynamic_off': 'AA 04 01 00',
-    'commercial_static_on': 'AA 04 02 01',
-    'commercial_static_off': 'AA 04 02 00',
+    'commercial_on': 'AA 04 01 01',
+    'commercial_off': 'AA 04 01 00',
 
     // ============ 轮廓灯 ============
     'outline_light_on': 'AA 05 00 01',
