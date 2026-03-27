@@ -32,13 +32,13 @@ class HomePage extends StatelessWidget {
                     _buildDoubleControlRow(context, '住宅', 'residential'),
                     _buildDoubleControlRow(context, '会所', 'clubhouse'),
                     _buildDoubleControlRow(context, '办公', 'office'),
-                    _buildDoubleControlRow(context, '石材柱灯', 'outline_light'),
+                    _buildDoubleControlRow(context, '石材柱灯槽', 'outline_light'),
                     
                     Divider(height: 32.h),
 
-                    _buildSingleControlRow(context, '商业', 'commercial', textOn: '开', textOff: '关'),
+                    _buildSingleControlRow(context, '裙房', 'commercial', textOn: '开', textOff: '关'),
                     _buildSingleControlRow(context, '塔冠', 'tower_crown', textOn: '开', textOff: '关'),
-                    _buildSingleControlRow(context, '景观', 'landscape', textOn: '开', textOff: '关'),
+                    _buildSingleControlRow(context, '首层景观', 'landscape', textOn: '开', textOff: '关'),
 
                     Divider(height: 32.h),
 
