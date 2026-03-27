@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -41,7 +41,7 @@ jobs:
           zip -r Runner.app.zip Runner.app
           
       - name: Upload iOS artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ios-app-unsigned
           path: sand_table_control/build/ios/iphoneos/Runner.app.zip
