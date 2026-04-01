@@ -18,38 +18,43 @@ class HomePage extends StatelessWidget {
           _buildConnectionIndicator(),
         ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          child: Column(
-            children: [
-              SizedBox(height: 16.h),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: Column(
+                children: [
+                  SizedBox(height: 16.h),
 
-              // 控制列表
-              Expanded(
-                child: ListView(
-                  children: [
-                    _buildDoubleControlRow(context, '住宅', 'residential'),
-                    _buildDoubleControlRow(context, '会所', 'clubhouse'),
-                    _buildDoubleControlRow(context, '办公', 'office'),
-                    _buildDoubleControlRow(context, '石材柱灯槽', 'outline_light'),
-                    
-                    Divider(height: 32.h),
+                  // 控制列表
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        _buildDoubleControlRow(context, '住宅', 'residential'),
+                        _buildDoubleControlRow(context, '会所', 'clubhouse'),
+                        _buildDoubleControlRow(context, '办公', 'office'),
+                        _buildDoubleControlRow(context, '石材柱灯槽', 'outline_light'),
+                        
+                        Divider(height: 32.h),
 
-                    _buildSingleControlRow(context, '裙房', 'commercial', textOn: '开', textOff: '关'),
-                    _buildSingleControlRow(context, '塔冠', 'tower_crown', textOn: '开', textOff: '关'),
-                    _buildSingleControlRow(context, '首层景观', 'landscape', textOn: '开', textOff: '关'),
+                        _buildSingleControlRow(context, '裙房', 'commercial', textOn: '开', textOff: '关'),
+                        _buildSingleControlRow(context, '塔冠', 'tower_crown', textOn: '开', textOff: '关'),
+                        _buildSingleControlRow(context, '首层景观', 'landscape', textOn: '开', textOff: '关'),
 
-                    Divider(height: 32.h),
+                        Divider(height: 32.h),
 
-                    // 总控
-                    _buildMainControlRow(context),
-                  ],
-                ),
+                        // 总控
+                        _buildMainControlRow(context),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          _buildConnectionOverlay(),
+        ],
       ),
     );
   }
@@ -90,6 +95,60 @@ class HomePage extends StatelessWidget {
               tcpService.manualReconnect();
             }
           },
+        );
+      },
+    );
+  }
+
+  /// 全局连接状态遮罩（未连接或正在连接时显示，连接成功自动消失）
+  Widget _buildConnectionOverlay() {
+    return Consumer<TcpService>(
+      builder: (context, tcpService, child) {
+        final state = tcpService.connectionState;
+        if (state == ConnectionStateEnum.connected) {
+          return const SizedBox.shrink();
+        }
+
+        final isConnecting = state == ConnectionStateEnum.connecting;
+        final icon = isConnecting ? Icons.wifi_protected_setup : Icons.wifi_off;
+        final color = isConnecting ? Colors.orange : Colors.red;
+        final text = isConnecting ? '正在连接到控制器...' : '未连接到控制器';
+
+        return Positioned.fill(
+          child: AbsorbPointer(
+            absorbing: true,
+            child: Container(
+              color: Colors.black54,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(icon, color: color, size: 36.sp),
+                      SizedBox(height: 12.h),
+                      Text(
+                        text,
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 12.h),
+                      if (isConnecting)
+                        const CircularProgressIndicator()
+                      else
+                        ElevatedButton(
+                          onPressed: () => tcpService.manualReconnect(),
+                          child: const Text('重新连接'),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         );
       },
     );
