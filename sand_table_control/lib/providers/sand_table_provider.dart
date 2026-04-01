@@ -34,6 +34,7 @@ class SandTableProvider extends ChangeNotifier {
 
   /// 切换按钮状态
   void toggleSwitch(String key) {
+    if (_tcpService.connectionState != ConnectionStateEnum.connected) return;
     if (!switches.containsKey(key)) return;
 
     // 当用户主动点击时，解除该模块的“全暗锁”状态
@@ -52,6 +53,7 @@ class SandTableProvider extends ChangeNotifier {
 
   /// 直接设置按钮具体状态 (用于双按钮分离: 动态=true, 静态=false)
   void setSwitchState(String key, bool isOn) {
+    if (_tcpService.connectionState != ConnectionStateEnum.connected) return;
     if (!switches.containsKey(key)) return;
 
     isTurnedOff[key] = false;
@@ -66,6 +68,7 @@ class SandTableProvider extends ChangeNotifier {
 
   /// 切换总控（全亮/全暗）
   void toggleMainControl() {
+    if (_tcpService.connectionState != ConnectionStateEnum.connected) return;
     isAllOn = !isAllOn;
 
     if (isAllOn) {

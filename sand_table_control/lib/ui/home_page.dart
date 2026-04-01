@@ -103,8 +103,8 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-          Consumer<SandTableProvider>(
-            builder: (context, provider, child) {
+          Consumer2<SandTableProvider, TcpService>(
+            builder: (context, provider, tcpService, child) {
               final value = provider.switches[key] ?? false;
               final isTurnedOff = provider.isTurnedOff[key] ?? false;
               
@@ -112,6 +112,7 @@ class HomePage extends StatelessWidget {
               final isDynamicActive = !isTurnedOff && value == true;
               // 静态：当 value 为 false 且没有被全暗锁定时激活
               final isStaticActive = !isTurnedOff && value == false;
+              final isDisconnected = tcpService.connectionState != ConnectionStateEnum.connected;
 
               return Row(
                 children: [
@@ -119,6 +120,7 @@ class HomePage extends StatelessWidget {
                     label: '动态',
                     isActive: isDynamicActive,
                     activeColor: Colors.green,
+                    isDisabled: isDisconnected,
                     onTap: () => provider.setSwitchState(key, true),
                   ),
                   SizedBox(width: 12.w),
@@ -126,6 +128,7 @@ class HomePage extends StatelessWidget {
                     label: '静态',
                     isActive: isStaticActive,
                     activeColor: Colors.blue,
+                    isDisabled: isDisconnected,
                     onTap: () => provider.setSwitchState(key, false),
                   ),
                 ],
@@ -150,8 +153,9 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-          Consumer<SandTableProvider>(
-            builder: (context, provider, child) {
+          Consumer2<SandTableProvider, TcpService>(
+            builder: (context, provider, tcpService, child) {
+              final isDisconnected = tcpService.connectionState != ConnectionStateEnum.connected;
               final value = provider.switches[key] ?? false;
               final isTurnedOff = provider.isTurnedOff[key] ?? false;
               
@@ -161,6 +165,7 @@ class HomePage extends StatelessWidget {
               return _CustomSwitch(
                 label: displayLabel,
                 value: value,
+                isDisabled: isDisconnected,
                 activeColor: colorOn,
                 inactiveColor: colorOff,
                 onChanged: (val) => provider.toggleSwitch(key),
@@ -180,11 +185,13 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text('总控', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, color: Colors.blue)),
-          Consumer<SandTableProvider>(
-            builder: (context, provider, child) {
+          Consumer2<SandTableProvider, TcpService>(
+            builder: (context, provider, tcpService, child) {
+              final isDisconnected = tcpService.connectionState != ConnectionStateEnum.connected;
               return _CustomSwitch(
                 label: provider.isAllOn ? '全亮' : '全暗',
                 value: provider.isAllOn,
+                isDisabled: isDisconnected,
                 activeColor: Colors.blue,
                 onChanged: (val) => provider.toggleMainControl(),
               );
@@ -266,6 +273,7 @@ class _StateButton extends StatelessWidget {
   final String label;
   final bool isActive;
   final Color activeColor;
+  final bool isDisabled;
   final VoidCallback onTap;
 
   const _StateButton({
@@ -273,15 +281,16 @@ class _StateButton extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.activeColor,
+    this.isDisabled = false,
     required this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isActive ? activeColor : const Color(0xFFBDBDBD);
+    final bgColor = isDisabled ? Colors.grey[300]! : (isActive ? activeColor : const Color(0xFFBDBDBD));
     
     return GestureDetector(
-      onTap: onTap,
+      onTap: isDisabled ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
