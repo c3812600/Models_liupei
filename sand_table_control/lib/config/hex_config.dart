@@ -12,37 +12,37 @@ class HexConfig {
   // 建议将十六进制字符串格式统一为带空格的格式，如 "AA BB 01"
   static const Map<String, String> commands = {
     // ============ 住宅 ============
-    'residential_on': 'FE 10 00 03 00 02 04 00 04 00 0A 41 6B',
-    'residential_off': 'FE 10 00 08 00 02 04 00 04 00 0A 00 D8',
+    'residential_on': 'FE 10 00 03 00 02 04 00 04 00 05 01 6F',
+    'residential_off': 'FE 10 00 08 00 02 04 00 04 00 05 40 DC',
 
     // ============ 会所 ============
-    'clubhouse_on': 'FE 10 00 0D 00 02 04 00 04 00 0A C0 E7',
-    'clubhouse_off': 'FE 10 00 12 00 02 04 00 04 00 0A 81 AB',
+    'clubhouse_on': 'FE 10 00 0D 00 02 04 00 04 00 05 80 E3',
+    'clubhouse_off': 'FE 10 00 12 00 02 04 00 04 00 05 C1 AF',
 
     // ============ 办公 ============
-    'office_on': 'FE 10 00 17 00 02 04 00 04 00 0A 41 94',
-    'office_off': 'FE 10 00 1C 00 02 04 00 04 00 0A 00 27',
+    'office_on': 'FE 10 00 17 00 02 04 00 04 00 05 01 90',
+    'office_off': 'FE 10 00 17 00 02 04 00 04 00 05 01 90',
 
     // ============ 石材柱灯槽 ============
-    'outline_light_on': 'FE 10 00 21 00 02 04 00 04 00 0A C2 AA',
-    'outline_light_off': 'FE 10 00 26 00 02 04 00 04 00 0A 83 4C',
+    'outline_light_on': 'FE 10 00 21 00 02 04 00 04 00 05 82 AE',
+    'outline_light_off': 'FE 10 00 26 00 02 04 00 04 00 05 C3 48',
 
     // ============ 裙房 ============
-    'commercial_on': 'FE 10 00 2B 00 02 04 00 04 00 0A 42 D5',
-    'commercial_off': 'FE 10 00 2B 00 02 04 00 04 00 0A 42 D5',
+    'commercial_on': 'FE 10 00 2B 00 02 04 00 04 00 05 02 D1',
+    'commercial_off': 'FE 10 00 2B 00 02 04 00 04 00 05 02 D1',
 
     // ============ 塔冠 ============
-    'tower_crown_on': 'FE 10 00 30 00 02 04 00 04 00 0A 02 6A',
-    'tower_crown_off': 'FE 10 00 30 00 02 04 00 04 00 0A 02 6A',
+    'tower_crown_on': 'FE 10 00 30 00 02 04 00 04 00 05 42 6E',
+    'tower_crown_off': 'FE 10 00 30 00 02 04 00 04 00 05 42 6E',
 
     // ============ 首层景观 ============
-    'landscape_on': 'FE 10 00 35 00 02 04 00 04 00 0A C2 55',
-    'landscape_off': 'FE 10 00 35 00 02 04 00 04 00 0A C2 55',
+    'landscape_on': 'FE 10 00 35 00 02 04 00 04 00 05 82 51',
+    'landscape_off': 'FE 10 00 35 00 02 04 00 04 00 05 82 51',
 
     // ============ 总控 ============
     // 备注：全亮时所有灯光静态常亮
-    'main_all_on': 'FE 10 00 3A 00 02 04 00 04 00 0A 82 15',
-    'main_all_off': 'FE 10 00 3A 00 02 04 00 04 00 0A 82 15',
+    'main_all_on': 'FE 10 00 3A 00 02 04 00 04 00 05 C2 11',
+    'main_all_off': 'FE 10 00 3A 00 02 04 00 04 00 05 C2 11',
   };
 
   /// 获取指定键的 HEX 指令列表（将字符串解析为 bytes）

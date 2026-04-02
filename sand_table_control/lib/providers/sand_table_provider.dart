@@ -37,8 +37,8 @@ class SandTableProvider extends ChangeNotifier {
     if (_tcpService.connectionState != ConnectionStateEnum.connected) return;
     if (!switches.containsKey(key)) return;
 
-    // 当用户主动点击时，解除该模块的“全暗锁”状态
     isTurnedOff[key] = false;
+    isAllOn = false;
 
     switches[key] = !switches[key]!;
     
@@ -46,7 +46,6 @@ class SandTableProvider extends ChangeNotifier {
     final commandKey = '${key}_${switches[key]! ? 'on' : 'off'}';
     _tcpService.sendHexCommand(commandKey);
 
-    // 状态改变，如果全亮状态被破坏，则取消全亮标识
     _checkAllOnState();
     notifyListeners();
   }
@@ -57,6 +56,7 @@ class SandTableProvider extends ChangeNotifier {
     if (!switches.containsKey(key)) return;
 
     isTurnedOff[key] = false;
+    isAllOn = false;
     switches[key] = isOn;
     
     final commandKey = '${key}_${isOn ? 'on' : 'off'}';
@@ -92,16 +92,12 @@ class SandTableProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 检查是否所有灯光都处于开启，如果是，则自动勾选总控
   void _checkAllOnState() {
-    bool allOn = true;
     for (var isOn in switches.values) {
       if (!isOn) {
-        allOn = false;
-        break;
+        isAllOn = false;
+        return;
       }
     }
-
-    isAllOn = allOn;
   }
 }

@@ -166,11 +166,10 @@ class HomePage extends StatelessWidget {
             builder: (context, provider, tcpService, child) {
               final value = provider.switches[key] ?? false;
               final isTurnedOff = provider.isTurnedOff[key] ?? false;
+              final isMainAllOn = provider.isAllOn;
               
-              // 动态：当 value 为 true 且没有被全暗锁定时激活
-              final isDynamicActive = !isTurnedOff && value == true;
-              // 静态：当 value 为 false 且没有被全暗锁定时激活
-              final isStaticActive = !isTurnedOff && value == false;
+              final isDynamicActive = !isMainAllOn && !isTurnedOff && value == true;
+              final isStaticActive = isMainAllOn || (!isTurnedOff && value == false);
               final isDisconnected = tcpService.connectionState != ConnectionStateEnum.connected;
 
               return Row(
