@@ -2,8 +2,8 @@
 /// 用户可以在此修改各个按钮发送的指令内容
 class HexConfig {
   // IP 和端口配置
-  static const String serverIp = '192.168.10.1';
-  static const int serverPort = 60001;
+  static const String serverIp = '192.168.18.119';
+  static const int serverPort = 2756;
 
   // 心跳包配置（如果需要）
   static const String heartbeat = 'FF FF FF FF';
