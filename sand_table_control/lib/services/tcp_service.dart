@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import '../config/hex_config.dart';
 
 enum ConnectionStateEnum {
@@ -10,7 +11,7 @@ enum ConnectionStateEnum {
 }
 
 /// TCP 网络服务：负责长连接与发送指令
-class TcpService extends ChangeNotifier {
+class TcpService extends ChangeNotifier with WidgetsBindingObserver {
   Socket? _socket;
   ConnectionStateEnum _connectionState = ConnectionStateEnum.disconnected;
 
@@ -22,6 +23,7 @@ class TcpService extends ChangeNotifier {
   bool _isDisposed = false;
 
   TcpService() {
+    WidgetsBinding.instance.addObserver(this);
     _initConnection();
   }
 
@@ -119,8 +121,19 @@ class TcpService extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
+    WidgetsBinding.instance.removeObserver(this);
     _reconnectTimer?.cancel();
     _socket?.destroy();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_isDisposed) return;
+    if (state == AppLifecycleState.resumed) {
+      if (_connectionState != ConnectionStateEnum.connected) {
+        _initConnection();
+      }
+    }
   }
 }

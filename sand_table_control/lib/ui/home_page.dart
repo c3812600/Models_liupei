@@ -18,38 +18,43 @@ class HomePage extends StatelessWidget {
           _buildConnectionIndicator(),
         ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          child: Column(
-            children: [
-              SizedBox(height: 16.h),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: Column(
+                children: [
+                  SizedBox(height: 16.h),
 
-              // 控制列表
-              Expanded(
-                child: ListView(
-                  children: [
-                    _buildDoubleControlRow(context, '住宅', 'residential'),
-                    _buildDoubleControlRow(context, '会所', 'clubhouse'),
-                    _buildDoubleControlRow(context, '办公', 'office'),
-                    _buildDoubleControlRow(context, '石材柱灯槽', 'outline_light'),
-                    
-                    Divider(height: 32.h),
+                  // 控制列表
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        _buildDoubleControlRow(context, '住宅', 'residential'),
+                        _buildDoubleControlRow(context, '会所', 'clubhouse'),
+                        _buildDoubleControlRow(context, '办公', 'office'),
+                        _buildDoubleControlRow(context, '石材柱灯槽', 'outline_light'),
+                        
+                        Divider(height: 32.h),
 
-                    _buildSingleControlRow(context, '裙房', 'commercial', textOn: '开', textOff: '关'),
-                    _buildSingleControlRow(context, '塔冠', 'tower_crown', textOn: '开', textOff: '关'),
-                    _buildSingleControlRow(context, '首层景观', 'landscape', textOn: '开', textOff: '关'),
+                        _buildSingleControlRow(context, '裙房', 'commercial', textOn: '开', textOff: '关'),
+                        _buildSingleControlRow(context, '塔冠', 'tower_crown', textOn: '开', textOff: '关'),
+                        _buildSingleControlRow(context, '首层景观', 'landscape', textOn: '开', textOff: '关'),
 
-                    Divider(height: 32.h),
+                        Divider(height: 32.h),
 
-                    // 总控
-                    _buildMainControlRow(context),
-                  ],
-                ),
+                        // 总控
+                        _buildMainControlRow(context),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          _buildConnectionOverlay(),
+        ],
       ),
     );
   }
@@ -95,6 +100,60 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  /// 全局连接状态遮罩（未连接或正在连接时显示，连接成功自动消失）
+  Widget _buildConnectionOverlay() {
+    return Consumer<TcpService>(
+      builder: (context, tcpService, child) {
+        final state = tcpService.connectionState;
+        if (state == ConnectionStateEnum.connected) {
+          return const SizedBox.shrink();
+        }
+
+        final isConnecting = state == ConnectionStateEnum.connecting;
+        final icon = isConnecting ? Icons.wifi_protected_setup : Icons.wifi_off;
+        final color = isConnecting ? Colors.orange : Colors.red;
+        final text = isConnecting ? '正在连接到控制器...' : '未连接到控制器';
+
+        return Positioned.fill(
+          child: AbsorbPointer(
+            absorbing: true,
+            child: Container(
+              color: Colors.black54,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(icon, color: color, size: 36.sp),
+                      SizedBox(height: 12.h),
+                      Text(
+                        text,
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 12.h),
+                      if (isConnecting)
+                        const CircularProgressIndicator()
+                      else
+                        ElevatedButton(
+                          onPressed: () => tcpService.manualReconnect(),
+                          child: const Text('重新连接'),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   /// 构建双按钮控制行（动态/静态分离）
   Widget _buildDoubleControlRow(BuildContext context, String title, String key) {
     return Padding(
@@ -103,15 +162,15 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-          Consumer<SandTableProvider>(
-            builder: (context, provider, child) {
+          Consumer2<SandTableProvider, TcpService>(
+            builder: (context, provider, tcpService, child) {
               final value = provider.switches[key] ?? false;
               final isTurnedOff = provider.isTurnedOff[key] ?? false;
+              final isMainAllOn = provider.isAllOn;
               
-              // 动态：当 value 为 true 且没有被全暗锁定时激活
-              final isDynamicActive = !isTurnedOff && value == true;
-              // 静态：当 value 为 false 且没有被全暗锁定时激活
-              final isStaticActive = !isTurnedOff && value == false;
+              final isDynamicActive = !isMainAllOn && !isTurnedOff && value == true;
+              final isStaticActive = isMainAllOn || (!isTurnedOff && value == false);
+              final isDisconnected = tcpService.connectionState != ConnectionStateEnum.connected;
 
               return Row(
                 children: [
@@ -119,6 +178,7 @@ class HomePage extends StatelessWidget {
                     label: '动态',
                     isActive: isDynamicActive,
                     activeColor: Colors.green,
+                    isDisabled: isDisconnected,
                     onTap: () => provider.setSwitchState(key, true),
                   ),
                   SizedBox(width: 12.w),
@@ -126,6 +186,7 @@ class HomePage extends StatelessWidget {
                     label: '静态',
                     isActive: isStaticActive,
                     activeColor: Colors.blue,
+                    isDisabled: isDisconnected,
                     onTap: () => provider.setSwitchState(key, false),
                   ),
                 ],
@@ -150,8 +211,9 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-          Consumer<SandTableProvider>(
-            builder: (context, provider, child) {
+          Consumer2<SandTableProvider, TcpService>(
+            builder: (context, provider, tcpService, child) {
+              final isDisconnected = tcpService.connectionState != ConnectionStateEnum.connected;
               final value = provider.switches[key] ?? false;
               final isTurnedOff = provider.isTurnedOff[key] ?? false;
               
@@ -161,6 +223,7 @@ class HomePage extends StatelessWidget {
               return _CustomSwitch(
                 label: displayLabel,
                 value: value,
+                isDisabled: isDisconnected,
                 activeColor: colorOn,
                 inactiveColor: colorOff,
                 onChanged: (val) => provider.toggleSwitch(key),
@@ -180,11 +243,13 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text('总控', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, color: Colors.blue)),
-          Consumer<SandTableProvider>(
-            builder: (context, provider, child) {
+          Consumer2<SandTableProvider, TcpService>(
+            builder: (context, provider, tcpService, child) {
+              final isDisconnected = tcpService.connectionState != ConnectionStateEnum.connected;
               return _CustomSwitch(
                 label: provider.isAllOn ? '全亮' : '全暗',
                 value: provider.isAllOn,
+                isDisabled: isDisconnected,
                 activeColor: Colors.blue,
                 onChanged: (val) => provider.toggleMainControl(),
               );
@@ -266,6 +331,7 @@ class _StateButton extends StatelessWidget {
   final String label;
   final bool isActive;
   final Color activeColor;
+  final bool isDisabled;
   final VoidCallback onTap;
 
   const _StateButton({
@@ -273,15 +339,16 @@ class _StateButton extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.activeColor,
+    this.isDisabled = false,
     required this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isActive ? activeColor : const Color(0xFFBDBDBD);
+    final bgColor = isDisabled ? Colors.grey[300]! : (isActive ? activeColor : const Color(0xFFBDBDBD));
     
     return GestureDetector(
-      onTap: onTap,
+      onTap: isDisabled ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
